@@ -6,7 +6,6 @@
   "scripts": {
     "build": "tsc"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -24,7 +23,18 @@
   },
   "types": "dist/index.d.ts",
   "files": [
-    "/dist"
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "typescript",
+    "javascript",
+    "escpos",
+    "webusb",
+    "web-usb",
+    "webbluetooth",
+    "web-bluetooth"
   ],
   "repository": {
     "type": "git",
