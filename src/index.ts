@@ -53,6 +53,34 @@ export class EscPosDevice {
     );
   }
 
+  async newLine(count = 1) {
+    if (count < 1) {
+      return;
+    }
+    const command = '\x0a';
+    await this.device.transferOut(
+      this.endpointNumber,
+      new Uint8Array(new TextEncoder().encode(command.repeat(count)))
+    );
+  }
+
+  async partialCut(newLineCount: number = 5) {
+    await this.newLine(newLineCount);
+    const command = '\x1d\x56\x01';
+    await this.device.transferOut(
+      this.endpointNumber,
+      new Uint8Array(new TextEncoder().encode(command))
+    );
+  }
+
+  async fullCut() {
+    const command = '\x1d\x56\x00';
+    await this.device.transferOut(
+      this.endpointNumber,
+      new Uint8Array(new TextEncoder().encode(command))
+    );
+  }
+
   async image(src: string, width: number, maxWidth: number) {
     const imageCommand = [
       0x1b,
@@ -74,14 +102,6 @@ export class EscPosDevice {
         new Uint8Array(command)
       );
     }
-  }
-
-  async newLine(count = 1) {
-    const command = '\x0a';
-    await this.device.transferOut(
-      this.endpointNumber,
-      new Uint8Array(new TextEncoder().encode(command.repeat(count)))
-    );
   }
 
   async table(
