@@ -36,6 +36,7 @@ type Justification = 'left' | 'center' | 'right';
 export class EscPosDevice {
   private _device: USBDevice;
   private endpointNumber: number;
+  private encoder = new TextEncoder();
 
   public get device() {
     return this._device;
@@ -49,7 +50,7 @@ export class EscPosDevice {
   async reset() {
     await this.device.transferOut(
       this.endpointNumber,
-      new Uint8Array(new TextEncoder().encode('\x1b\x40'))
+      new Uint8Array(this.encoder.encode('\x1b\x40'))
     );
   }
 
@@ -60,7 +61,7 @@ export class EscPosDevice {
     const command = '\x0a';
     await this.device.transferOut(
       this.endpointNumber,
-      new Uint8Array(new TextEncoder().encode(command.repeat(count)))
+      new Uint8Array(this.encoder.encode(command.repeat(count)))
     );
   }
 
@@ -69,7 +70,7 @@ export class EscPosDevice {
     const command = '\x1d\x56\x01';
     await this.device.transferOut(
       this.endpointNumber,
-      new Uint8Array(new TextEncoder().encode(command))
+      new Uint8Array(this.encoder.encode(command))
     );
   }
 
@@ -77,7 +78,7 @@ export class EscPosDevice {
     const command = '\x1d\x56\x00';
     await this.device.transferOut(
       this.endpointNumber,
-      new Uint8Array(new TextEncoder().encode(command))
+      new Uint8Array(this.encoder.encode(command))
     );
   }
 
@@ -100,6 +101,10 @@ export class EscPosDevice {
       await this.device.transferOut(
         this.endpointNumber,
         new Uint8Array(command)
+      );
+      await this.device.transferOut(
+        this.endpointNumber,
+        new Uint8Array([0x1b, 0x4a, 0x10])
       );
     }
   }
@@ -143,9 +148,7 @@ export class EscPosDevice {
             : '\x00';
     await this.device.transferOut(
       this.endpointNumber,
-      new Uint8Array(
-        new TextEncoder().encode(`\x1b\x61${commandJustification}`)
-      )
+      new Uint8Array(this.encoder.encode(`\x1b\x61${commandJustification}`))
     );
   }
 
@@ -153,7 +156,7 @@ export class EscPosDevice {
     const commandBold = enable ? '\x01' : '\x00';
     await this.device.transferOut(
       this.endpointNumber,
-      new Uint8Array(new TextEncoder().encode(`\x1b\x45${commandBold}`))
+      new Uint8Array(this.encoder.encode(`\x1b\x45${commandBold}`))
     );
   }
 
@@ -167,14 +170,14 @@ export class EscPosDevice {
 
     await this.device.transferOut(
       this.endpointNumber,
-      new Uint8Array(new TextEncoder().encode(sizes.get(size)))
+      new Uint8Array(this.encoder.encode(sizes.get(size)))
     );
   }
 
   async text(text: string) {
     await this.device.transferOut(
       this.endpointNumber,
-      new Uint8Array(new TextEncoder().encode(text + '\n'))
+      new Uint8Array(this.encoder.encode(text + '\n'))
     );
   }
 }
