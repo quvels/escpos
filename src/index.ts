@@ -82,7 +82,7 @@ export class EscPosDevice {
     );
   }
 
-  async image(src: string, width: number, maxWidth: number) {
+  async image(src: string, width: number, maxWidth: number, feedCount = 0) {
     const imageCommand = [
       0x1b,
       0x2a,
@@ -102,10 +102,12 @@ export class EscPosDevice {
         this.endpointNumber,
         new Uint8Array(command)
       );
-      await this.device.transferOut(
-        this.endpointNumber,
-        new Uint8Array([0x1b, 0x4a, 0x10])
-      );
+      if (feedCount > 0 && feedCount <= 255) {
+        await this.device.transferOut(
+          this.endpointNumber,
+          new Uint8Array([0x1b, 0x4a, feedCount])
+        );
+      }
     }
   }
 
